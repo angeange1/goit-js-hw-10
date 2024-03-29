@@ -13,6 +13,8 @@ const secondsHand = document.querySelector('[data-seconds]')
 let userSelectedDate
 let msdiff
 
+startBtn.disabled = true
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -20,31 +22,29 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     console.log(selectedDates[0])
-    userSelectedDate = selectedDates[0]
-    msdiff = userSelectedDate - options.defaultDate
+    msdiff = selectedDates[0] - options.defaultDate
     if (msdiff < 1) {
+      startBtn.disabled = true
       iziToast.error({
-       message: `Please choose a date in the future`,
+      message: `Please choose a date in the future`
       });
     } else {
-      startBtn.disabled = false;
-      dateInput.disabled = true;
+      startBtn.disabled = false
+      userSelectedDate = selectedDates[0]
     }
   },
 };
 
-const fp = flatpickr(dateInput, options);
-
-startBtn.disabled = true;
+const fp = flatpickr(dateInput, options)
 
 startBtn.addEventListener('click', event => {
   const intervalId = setInterval(() => {
     const currentTime = Date.now()
     msdiff = userSelectedDate - currentTime
-    event.preventDefault()
     dateInput.disabled = true
+    startBtn.disabled = true
     if (msdiff < 1) {
-      startBtn.disabled = true
+      startBtn.disabled = false
       dateInput.disabled = false
       clearInterval(intervalId)
       return
@@ -52,14 +52,15 @@ startBtn.addEventListener('click', event => {
     const timeLeft = convertMs(msdiff)
       console.log(timeLeft)
 
-    daysHand.textContent = timeLeft.days.toString().padStart(2,"0")
-    hoursHand.textContent = timeLeft.hours.toString().padStart(2,"0")
-    minutesHand.textContent = timeLeft.minutes.toString().padStart(2,"0")
-    secondsHand.textContent = timeLeft.seconds.toString().padStart(2,"0")
-  }, 1000);
+    daysHand.textContent = addLeadingZero(timeLeft.days)
+    hoursHand.textContent = addLeadingZero(timeLeft.hours)
+    minutesHand.textContent = addLeadingZero(timeLeft.minutes)
+    secondsHand.textContent = addLeadingZero(timeLeft.seconds)
+  },
+    1000);
 })
 
-// function addLeadingZero(value) { }
+function addLeadingZero(value) {return value.toString().padStart(2,"0")}
   
 function convertMs(ms) {
   const second = 1000;
