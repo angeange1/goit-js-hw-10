@@ -12,6 +12,7 @@ const secondsHand = document.querySelector('[data-seconds]')
 
 let userSelectedDate
 let msdiff
+let timeLeft
 
 startBtn.disabled = true
 
@@ -39,27 +40,33 @@ const fp = flatpickr(dateInput, options)
 
 startBtn.addEventListener('click', event => {
   const intervalId = setInterval(() => {
+
     const currentTime = Date.now()
     msdiff = userSelectedDate - currentTime
+
     dateInput.disabled = true
     startBtn.disabled = true
+
     if (msdiff < 1) {
       startBtn.disabled = false
       dateInput.disabled = false
       clearInterval(intervalId)
       return
     }
-    const timeLeft = convertMs(msdiff)
-      console.log(timeLeft)
-
-    daysHand.textContent = addLeadingZero(timeLeft.days)
-    hoursHand.textContent = addLeadingZero(timeLeft.hours)
-    minutesHand.textContent = addLeadingZero(timeLeft.minutes)
-    secondsHand.textContent = addLeadingZero(timeLeft.seconds)
+    timeLeft = convertMs(msdiff)
+    console.log(timeLeft)
+    renderTime()
   },
     1000);
 })
 
+function renderTime() {
+  daysHand.textContent = addLeadingZero(timeLeft.days)
+    hoursHand.textContent = addLeadingZero(timeLeft.hours)
+    minutesHand.textContent = addLeadingZero(timeLeft.minutes)
+  secondsHand.textContent = addLeadingZero(timeLeft.seconds)
+}
+    
 function addLeadingZero(value) {return value.toString().padStart(2,"0")}
   
 function convertMs(ms) {
@@ -73,3 +80,9 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
     return { days, hours, minutes, seconds };
 }
+
+
+
+// Розгляньте можливість використання більш описового імені змінної для msdiff. Ім'я на кшталт timeDifference або подібне може бути більш інформативним.
+
+// Обробник події startBtn був досить довгим; розділила логіку на менші функції, може поліпшити читабельність.
